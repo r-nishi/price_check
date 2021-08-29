@@ -18,6 +18,9 @@ html = urllib.request.urlopen(target_url).read().decode('utf-8')
 # BeautifulSoupのインスタンスを生成
 soup = BeautifulSoup(html, 'html.parser')
 
+# カード名を取得
+card_name = soup.find("h2", class_="goods_name_").string
+
 # idから価格表を取得
 price_table = soup.find(id="priceTable-EN")
 # div classからカードの状態ごとの価格を詳しく取得
@@ -40,7 +43,7 @@ for price in price_list:
         # ¥と,を削除してリストに入れる
         output_list.append(int(price.contents[0].replace(',', '').replace('￥', '')))
 
-message = str(max(output_list)) + ' 〜 ' + str(min(output_list))
+message = card_name + 'の値段は' + str(max(output_list)) + ' 〜 ' + str(min(output_list)) + 'です'
 
 pprint(message)
 
