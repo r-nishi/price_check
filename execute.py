@@ -5,9 +5,11 @@
 """
 
 from bs4 import BeautifulSoup
-import urllib.request
+import urllib
 from pprint import pprint
 import requests
+import watchtower, logging
+import boto3
 
 # 価格を調べたいカードのURLを入力
 target_url = 'https://www.hareruyamtg.com/ja/products/detail/69814'
@@ -54,3 +56,17 @@ access_token = ''
 headers = {'Authorization': 'Bearer ' + access_token}
 payload = {'message': message}
 requests.post("https://notify-api.line.me/api/notify", headers=headers, params=payload)
+
+# 以下CloudWatchLogsに保存する処理
+session = boto3.Session(profile_name='default')
+# ログレベルをinfoにする
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(
+    watchtower.CloudWatchLogHandler(
+        log_group='price_check_logs', # ロググループを指定
+        stream_name='hareruya' # ログストリームを指定
+    )
+)
+logger.info(message)
