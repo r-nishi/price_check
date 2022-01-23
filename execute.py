@@ -96,8 +96,10 @@ con = pymysql.connect(
 
 try:
     with con.cursor() as cur:
-        sql = 'SELECT * FROM daily_price'
-        cur.execute(sql)
+        sql = 'INSERT INTO daily_price (id, shop_name, card_name, price_maximum, price_minimum) VALUES (%s, %s, %s, %s, %s)'
+        cur.execute(sql, (1, "晴れる屋", card_name, str(max(output_list)), str(min(output_list))))
+        con.commit()
+
         result = cur.fetchall()
         print(result)
 except:
