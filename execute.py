@@ -10,6 +10,8 @@ from pprint import pprint
 import requests
 import watchtower, logging
 import boto3
+import pymysql
+import rds_config as RDS
 
 
 def output_to_aws(message):
@@ -82,3 +84,21 @@ requests.post("https://notify-api.line.me/api/notify", headers=headers, params=p
 
 # AWS
 output_to_aws(message)
+
+# RDS
+con = pymysql.connect(
+        host=RDS.rds_host,
+        user=RDS.db_user,
+        password=RDS.db_password,
+        db=RDS.db_name,
+        cursorclass=pymysql.cursors.DictCursor
+)
+
+try:
+    with con.cursor() as cur:
+        sql = 'SELECT * FROM daily_price'
+        cur.execute(sql)
+        result = cur.fetchall()
+        print(result)
+except:
+    print('Error')
